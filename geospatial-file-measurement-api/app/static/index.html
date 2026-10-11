@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geospatial File Measurement API</title>
+<style>
+  :root { --side:#10284a; --side2:#1b3b69; --bg:#f3f6fb; --card:#fff; --text:#1a2433; --muted:#667085; --line:#e3e8ef; --accent:#2457d6; --ok:#067647; --okbg:#dcfae6; --warn:#b54708; --warnbg:#fef0c7; --bad:#b42318; --badbg:#fee4e2; --info:#175cd3; --infobg:#d1e9ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; }
+  aside { width:230px; background:var(--side); color:#fff; padding:18px 12px; display:flex; flex-direction:column; flex-shrink:0; position:sticky; top:0; height:100vh; }
+  .brand { display:flex; gap:10px; align-items:center; font-weight:600; line-height:1.2; padding:4px 8px 18px; } .brand i { font-style:normal; font-size:26px; }
+  nav a { display:block; color:#cbd6ea; text-decoration:none; padding:9px 12px; border-radius:8px; margin-bottom:4px; }
+  nav a.on, nav a:hover { background:var(--side2); color:#fff; }
+  .online { margin-top:auto; font-size:13px; color:#cbd6ea; padding:8px; } .dot { display:inline-block; width:9px; height:9px; border-radius:50%; background:#f59e0b; margin-right:6px; } .dot.up { background:#22c55e; }
+  main { flex:1; padding:26px 30px 60px; max-width:1100px; min-width:0; }
+  h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:17px; margin:0 0 10px; } .sub { color:var(--muted); margin:0 0 18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; } .tile { text-align:center; } .tile .ic { font-size:34px; } .tile p { color:var(--muted); font-size:14px; min-height:42px; }
+  button, .btn { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer; text-decoration:none; display:inline-block; }
+  button:disabled { opacity:.5; cursor:default; } .btn.danger, button.danger { background:var(--bad); } .btn.ghost { background:none; color:var(--accent); padding:0; }
+  #drop { border:2px dashed var(--line); border-radius:12px; padding:34px; text-align:center; color:var(--muted); cursor:pointer; } #drop.over { border-color:var(--accent); color:var(--accent); } #drop .ic { font-size:40px; }
+  .note { background:var(--infobg); color:#0b3a8c; border-radius:10px; padding:12px 16px; font-size:14px; } .note ul { margin:6px 0 0 18px; padding:0; }
+  pre { background:#0f1b2d; color:#d6e2f5; border-radius:10px; padding:14px; overflow:auto; font-size:13px; margin:0; }
+  .wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:14px; } th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-size:12px; text-transform:uppercase; } tr.link { cursor:pointer; } tr.link:hover { background:var(--bg); } td.props { color:var(--muted); font-size:13px; max-width:280px; }
+  .badge { display:inline-block; padding:2px 10px; border-radius:6px; font-size:12px; font-weight:600; background:var(--infobg); color:var(--info); }
+  .COMPLETED,.OK { background:var(--okbg); color:var(--ok); } .FAILED,.INVALID_GEOMETRY { background:var(--badbg); color:var(--bad); } .UNSUPPORTED,.EMPTY_GEOMETRY,.PROCESSING { background:var(--warnbg); color:var(--warn); } .NOT_APPLICABLE { background:var(--line); color:var(--muted); }
+  dl { display:grid; grid-template-columns:180px 1fr; gap:0; margin:0; } dt,dd { margin:0; padding:10px 0; border-bottom:1px solid var(--line); } dt { color:var(--muted); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; } .stat { border:1px solid var(--line); border-radius:10px; padding:10px 14px; } .stat b { display:block; font-size:17px; } .stat span { color:var(--muted); font-size:12px; text-transform:uppercase; }
+  .err { border-color:var(--bad); color:var(--bad); } .warn { background:var(--warnbg); color:var(--warn); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:14px; }
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; } .hidden { display:none; } ul.ticks { list-style:none; padding:0; margin:0; } ul.ticks li::before { content:"✔ "; color:var(--ok); }
+  @media (max-width:760px) { body { flex-direction:column; } aside { width:100%; height:auto; position:static; } nav { display:flex; gap:4px; flex-wrap:wrap; } .online { margin:0; } main { padding:18px 14px; } dl { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><i>🌍</i><span>Geospatial File<br>Measurement API</span></div>
+  <nav id="nav">
+    <a href="#/" data-k="home">🏠 Home</a><a href="#/upload" data-k="upload">⬆️ Upload File</a>
+    <a href="#/files" data-k="files">🗂️ Files</a><a href="#/docs" data-k="docs">📄 Documentation</a>
+  </nav>
+  <div class="online"><span id="dot" class="dot"></span><span id="online">Checking API…</span></div>
+</aside>
+<main id="view"></main>
+<script>
+// Every dynamic value goes in as a text node (uploaded attributes are untrusted) - no innerHTML.
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? (el[k] = v) : v === true ? el.setAttribute(k, "") : v !== false && v != null && el.setAttribute(k, v);
+  el.append(...kids.flat().filter(k => k != null && k !== false)); return el;
+};
+const fmt = (n, d = 2) => n == null ? "—" : Number(n).toLocaleString(undefined, { maximumFractionDigits: d });
+const when = s => new Date(s).toLocaleString();
+const badge = (s, title) => h("span", { class: "badge " + s, title: title || null }, s);
+const view = document.getElementById("view");
+const api = async (path, opts) => { const r = await fetch(path, opts); const b = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(typeof b.detail === "string" ? b.detail : "Request failed"), { body: b }); return b; };
+const removeFile = async (id, name, after) => {
+  if (!confirm(`Delete "${name}" and all its measurements? This cannot be undone.`)) return;
+  try { await api(`/api/files/${id}/`, { method: "DELETE" }); after(); } catch (e) { alert(e.message); }
+};
+const SAMPLE = { id: "abc123", filename: "survey.kml", feature_count: 120, crs: "EPSG:4326", status: "COMPLETED" };
+const page = (title, sub) => [h("h1", {}, title), sub && h("p", { class: "sub" }, sub)];
+
+const views = {
+  home() {
+    const tile = (ic, t, p, href, label) => h("div", { class: "card tile" }, h("div", { class: "ic" }, ic), h("h2", {}, t), h("p", {}, p), h("a", { class: "btn", href }, label));
+    return [...page("Geospatial File Measurement API", "Upload geospatial files (Shapefile or KML), process features and get accurate measurements for your geometries."),
+      h("div", { class: "grid3" },
+        tile("⬆️", "Upload File", "Supports .kml and .zip (Shapefile) files", "#/upload", "Upload File"),
+        tile("📄", "View File Info", "Check processing status, CRS and feature count", "#/files", "View Files"),
+        tile("📏", "Get Measurements", "Area, length and geometry details for each feature", "#/docs", "View Documentation")),
+      h("div", { class: "card" }, h("h2", {}, "Powerful Geospatial Processing"),
+        h("ul", { class: "ticks" }, ["Supports KML and Shapefile (ZIP)", "CRS transformation to a metre-based projected CRS", "Accurate area and length calculations", "RESTful API with interactive docs"].map(t => h("li", {}, t))))];
+  },
+  upload() {
+    let file = null;
+    const chosen = h("span", {}, "Supported formats: .kml or .zip (Shapefile)");
+    const input = h("input", { type: "file", accept: ".zip,.kml", class: "hidden", onchange: e => pick(e.target.files[0]) });
+    const go = h("button", { disabled: true, onclick: send }, "Upload & measure");
+    const status = h("span", { class: "sub", style: "margin:0" }); const error = h("div", { class: "card err hidden" });
+    const drop = h("div", { id: "drop", tabindex: 0, onclick: () => input.click() }, h("div", { class: "ic" }, "☁️"), h("div", {}, h("b", {}, "Drag & drop your file here"), " or click to choose"), chosen);
+    const pick = f => { file = f; if (f) chosen.textContent = f.name; go.disabled = !f; };
+    ["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", e => pick(e.dataTransfer.files[0]));
+    async function send() {
+      error.classList.add("hidden"); go.disabled = true; status.textContent = "Uploading…";
+      try { const body = new FormData(); body.append("file", file); const f = await api("/api/files/", { method: "POST", body }); location.hash = "#/files/" + f.id; }
+      catch (e) { error.textContent = (e.body?.code ? e.body.code + ": " : "") + e.message; error.classList.remove("hidden"); status.textContent = ""; go.disabled = false; }
+    }
+    return [...page("Upload Geospatial File"), h("div", { class: "card" }, drop, input, h("div", { class: "row", style: "margin-top:14px" }, go, status)), error,
+      h("div", { class: "note" }, h("b", {}, "Requirements"), h("ul", {}, h("li", {}, "Shapefile: a .zip containing .shp, .shx, .dbf and .prj (the CRS is never guessed)"), h("li", {}, "KML: a single .kml file"))),
+      h("h2", { style: "margin-top:18px" }, "Example Response"), h("pre", {}, JSON.stringify(SAMPLE, null, 2))];
+  },
+  async files() {
+    const d = await api("/api/files/");
+    const body = d.items.length ? h("div", { class: "wrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["File", "ID", "Features", "CRS", "Status", "Uploaded", ""].map(c => h("th", {}, c)))),
+      h("tbody", {}, d.items.map(f => h("tr", { class: "link", onclick: () => (location.hash = "#/files/" + f.id) },
+        h("td", {}, f.filename), h("td", {}, f.id.slice(0, 8)), h("td", {}, f.feature_count), h("td", {}, f.crs ?? "—"), h("td", {}, badge(f.status)), h("td", {}, when(f.uploaded_at)),
+        h("td", {}, h("button", { class: "danger", onclick: e => { e.stopPropagation(); removeFile(f.id, f.filename, route); } }, "Delete"))))))) : h("p", { class: "sub" }, "No files yet. Upload one to get started.");
+    return [...page("Files", `${d.total} uploaded file(s), newest first`), h("div", { class: "card" }, body)];
+  },
+  async fileInfo(id) {
+    const f = await api(`/api/files/${id}/`);
+    const row = (k, v) => [h("dt", {}, k), h("dd", {}, v)];
+    return [h("a", { class: "btn ghost", href: "#/files" }, "← Back to Files"), ...page(f.filename, "ID: " + f.id),
+      f.warnings.map(w => h("div", { class: "warn" }, w)),
+      h("div", { class: "card" }, h("dl", {}, ...row("Filename", f.filename), ...row("Feature Count", f.feature_count), ...row("CRS", f.crs ?? "—"),
+        ...row("Measurement CRS", f.measurement_crs ?? "—"), ...row("Status", badge(f.status)), ...row("Uploaded At", when(f.uploaded_at)),
+        ...(f.error ? row("Error", `${f.error_code}: ${f.error}`) : []))),
+      h("div", { class: "row" }, f.status === "COMPLETED" && h("a", { class: "btn", href: `#/files/${id}/measurements` }, "View Measurements"),
+        h("button", { class: "danger", onclick: () => removeFile(id, f.filename, () => nav("#/files")) }, "Delete File"))];
+  },
+  async measurements(id, offset = 0) {
+    const LIMIT = 50, m = await api(`/api/files/${id}/measurements/?limit=${LIMIT}&offset=${offset}`), s = m.summary, p = m.pagination;
+    const stat = (l, v) => h("div", { class: "stat" }, h("b", {}, v), h("span", {}, l));
+    const cellFor = f => f.measurement ? h("span", { class: "badge OK" }, `${f.measurement.type === "area" ? "Area" : "Length"}: ${fmt(f.measurement.value)} ${f.measurement.unit}`) : h("span", { class: "badge " + f.status, title: f.message || "" }, f.status === "NOT_APPLICABLE" ? "No measurement" : f.status);
+    const pager = h("div", { class: "row", style: "margin-top:12px" },
+      h("button", { disabled: offset === 0, onclick: () => nav(`#/files/${id}/measurements/${Math.max(0, offset - LIMIT)}`) }, "Previous"),
+      h("span", { class: "sub", style: "margin:0" }, `${p.total ? offset + 1 : 0}–${Math.min(offset + LIMIT, p.total)} of ${p.total}`),
+      h("button", { disabled: offset + LIMIT >= p.total, onclick: () => nav(`#/files/${id}/measurements/${offset + LIMIT}`) }, "Next"));
+    return [h("a", { class: "btn ghost", href: `#/files/${id}` }, "← Back to File Information"), ...page("Feature Measurements"),
+      m.warnings.map(w => h("div", { class: "warn" }, w)),
+      h("div", { class: "card" }, h("div", { class: "stats" }, stat("Feature count", p.total), stat("Source CRS", m.source_crs ?? "—"), stat("Measurement CRS", m.measurement_crs ?? "—"),
+        stat("Total area", `${fmt(s.total_area_sq_m)} m²`), stat("Total length", `${fmt(s.total_length_m)} m`), stat("Measured / not", `${s.measured} / ${s.not_measured}`))),
+      h("div", { class: "card" }, h("h2", {}, "Features"), h("div", { class: "wrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["#", "Geometry type", "Properties (sample)", "Measurement"].map(c => h("th", {}, c)))),
+        h("tbody", {}, m.features.map(f => h("tr", {}, h("td", {}, f.feature_id + 1), h("td", {}, f.geometry_type ?? "—"),
+          h("td", { class: "props" }, Object.entries(f.properties).slice(0, 3).map(([k, v]) => `${k}: ${v}`).join(", ") || "—"), h("td", {}, cellFor(f))))))), pager),
+      h("details", { class: "card" }, h("summary", {}, "Raw JSON (this page)"), h("pre", { style: "margin-top:10px;max-height:380px" }, JSON.stringify({ ...m, features: m.features.map(f => ({ ...f, geometry: undefined })) }, null, 2)))];
+  },
+  docs() {
+    const ep = (m, p, d) => h("tr", {}, h("td", {}, h("span", { class: "badge " + (m === "POST" ? "OK" : m === "DELETE" ? "FAILED" : "") }, m)), h("td", {}, h("code", {}, p)), h("td", {}, d));
+    return [...page("Documentation", "Three required endpoints plus a file list and delete used by this UI."),
+      h("div", { class: "card" }, h("div", { class: "wrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Method", "Endpoint", "Responsibility"].map(c => h("th", {}, c)))), h("tbody", {},
+        ep("POST", "/api/files/", "Upload, process and register a file"), ep("GET", "/api/files/{id}/", "File information and processing status"),
+        ep("GET", "/api/files/{id}/measurements/", "Per-feature measurement results"), ep("GET", "/api/files/", "List uploaded files (extra)"),
+        ep("DELETE", "/api/files/{id}/", "Delete a file and its measurements (extra)"))))),
+      h("div", { class: "row", style: "margin-bottom:16px" }, h("a", { class: "btn", href: "/docs", target: "_blank" }, "Open Swagger UI"), h("a", { class: "btn", href: "/redoc", target: "_blank" }, "Open ReDoc")),
+      h("h2", {}, "Example: measurements response"), h("pre", {}, JSON.stringify({ file_id: "abc123", source_crs: "EPSG:4326", measurement_crs: "EPSG:32643", features: [
+        { feature_id: 0, geometry_type: "Polygon", status: "OK", measurement: { type: "area", value: 12500.75, unit: "m²" } },
+        { feature_id: 1, geometry_type: "LineString", status: "OK", measurement: { type: "length", value: 320.5, unit: "m" } },
+        { feature_id: 2, geometry_type: "Point", status: "NOT_APPLICABLE", measurement: null }] }, null, 2))];
+  },
+};
+
+const nav = hash => { location.hash = hash; };
+async function route() {
+  const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  const key = !parts.length ? "home" : parts[0] === "files" ? "files" : parts[0];
+  document.querySelectorAll("#nav a").forEach(a => a.classList.toggle("on", a.dataset.k === key));
+  try {
+    let out;
+    if (!parts.length) out = views.home();
+    else if (parts[0] === "upload") out = views.upload();
+    else if (parts[0] === "docs") out = views.docs();
+    else if (parts[0] === "files" && parts[2] === "measurements") out = await views.measurements(parts[1], Number(parts[3] || 0));
+    else if (parts[0] === "files" && parts[1]) out = await views.fileInfo(parts[1]);
+    else if (parts[0] === "files") out = await views.files();
+    else out = views.home();
+    view.replaceChildren(...[out].flat().filter(Boolean));
+  } catch (e) { view.replaceChildren(h("div", { class: "card err" }, e.message)); }
+}
+addEventListener("hashchange", route); route();
+fetch("/health").then(r => r.json()).then(() => { document.getElementById("dot").classList.add("up"); document.getElementById("online").textContent = "API Online"; }).catch(() => { document.getElementById("online").textContent = "API Offline"; });
+</script>
+</body>
+</html>
