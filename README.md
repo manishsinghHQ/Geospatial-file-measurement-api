@@ -10,7 +10,7 @@
 [![SQLite](https://img.shields.io/badge/SQLite-SQLAlchemy-003B57?logo=sqlite&logoColor=white)](https://www.sqlalchemy.org/)
 [![Tests](https://img.shields.io/badge/tests-53%20passing-brightgreen)](#11-testing)
 
-[▶ Demo video](ADD_YOUR_VIDEO_LINK_HERE) · [Screenshots](#2-screenshots-and-demo-video) · [API reference](#7-api-reference) · [Quick start](#5-installation)
+[▶ Demo video](https://youtu.be/dwG42E3Hm7g) · [Screenshots](#2-screenshots-and-demo-video) · [API reference](#7-api-reference) · [Quick start](#5-installation)
 
 </div>
 
@@ -55,7 +55,7 @@ verifies the results against an independent geodesic calculation.
 ## 2. Screenshots and demo video
 
 ### Demo video
-[![Watch the demo video](docs/screenshots/01-home.png)](ADD_YOUR_VIDEO_LINK_HERE)
+[![Watch the demo video](https://img.youtube.com/vi/dwG42E3Hm7g/hqdefault.jpg)](https://youtu.be/dwG42E3Hm7g)
 
 *Click the image to watch the walkthrough: upload → processing → measurements → delete, plus Swagger UI.*
 
@@ -87,7 +87,7 @@ How each requirement of the assignment is met, and which test proves it.
 | File IDs survive restarts | SQLite persistence (`repositories/`) | `test_data_survives_application_restart` |
 | Zip safety and upload size limit | path-traversal check, size caps | `test_zip_slip_rejected`, `test_upload_size_limit` |
 | README: setup, API, architecture, decisions, learning, future scope | this document | n/a |
-| Public GitHub repository | submitted separately | n/a |
+| Public GitHub repository | [manishsinghHQ/Geospatial-file-measurement-api](https://github.com/manishsinghHQ/Geospatial-file-measurement-api) | n/a |
 
 ## 4. Technology stack
 
@@ -106,8 +106,8 @@ How each requirement of the assignment is met, and which test proves it.
 so no system libraries are required.
 
 ```bash
-git clone ADD_YOUR_GITHUB_REPO_LINK_HERE
-cd geospatial-file-measurement-api
+git clone https://github.com/manishsinghHQ/Geospatial-file-measurement-api.git
+cd Geospatial-file-measurement-api
 
 python -m venv .venv
 .venv\Scripts\activate            # Windows
